@@ -1,5 +1,11 @@
 const express = require("express")
+const morgan = require("morgan")
+
 const app = express()
+
+morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
+const logger = morgan(':method :url :status :res[content-length] - :response-time ms :body')
+app.use(logger)
 
 app.use(express.json())
 
@@ -80,7 +86,6 @@ const nameUnique = (name) => {
 // create a new person
 app.post("/api/persons", (request, response) => {
   const body = request.body
-  console.log(body)
   const randomId = Math.floor(Math.random() * 100000)
 
   if (!body.name || !body.number) {
