@@ -1,0 +1,30 @@
+### delete person with id 2
+
+DELETE http://localhost:3001/api/persons/2
+
+### normal POST request, should succeed
+
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+  "name": "Will",
+  "number": "555-555-5555"
+}
+
+### empty name, should fail
+
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{}
+
+### non unique name, should fail
+
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+  "name": "Arto Hellas",
+  "number": "555-555-5555"
+}
