@@ -8,7 +8,7 @@ morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
 const logger = morgan(':method :url :status :res[content-length] - :response-time ms :body')
 
 app.use(logger)
-app.use(express.cors())
+app.use(cors())
 app.use(express.json())
 
 let persons = [
