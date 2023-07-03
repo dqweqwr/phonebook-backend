@@ -1,6 +1,8 @@
+require("dotenv").config()
 const express = require("express")
 const cors = require("cors")
 const morgan = require("morgan")
+const Person = require("./model/person")
 
 const app = express()
 
@@ -56,7 +58,9 @@ app.get("/info", (request, response) => {
 
 // get all people
 app.get("/api/persons", (request, response) => {
-  response.json(persons)
+  Person.find({}).then(people => {
+    response.json(people)
+  })
 })
 
 // get a specific person based on a given id
@@ -89,7 +93,6 @@ const nameUnique = (name) => {
 // create a new person
 app.post("/api/persons", (request, response) => {
   const body = request.body
-  const randomId = Math.floor(Math.random() * 100000)
 
   if (!body.name || !body.number) {
     return response.status(400).json({
@@ -97,20 +100,14 @@ app.post("/api/persons", (request, response) => {
     })
   }
 
-  if (!nameUnique(body.name)) {
-    return response.status(400).json({
-      error: "name must be unique"
-    })
-  }
-
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: randomId
-  }
+  })
 
-  persons = persons.concat(person)
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 const unknownEndpoint = (request, response) => {
@@ -118,7 +115,7 @@ const unknownEndpoint = (request, response) => {
 }
 app.use(unknownEndpoint)
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`)
 })
