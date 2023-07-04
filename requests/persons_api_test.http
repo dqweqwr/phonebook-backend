@@ -13,7 +13,7 @@ content-type: application/json
 
 {
   "name": "Arto Hellas",
-  "number": "7777777777777777777"
+  "number": "77-7777777777777777"
 }
 
 ### delete person with id
@@ -26,7 +26,7 @@ POST http://localhost:3001/api/persons
 content-type: application/json
 
 {
-  "name": "Will",
+  "name": "Bob",
   "number": "555-555-5555"
 }
 
@@ -44,6 +44,16 @@ content-type: application/json
 
 {
   "name": "Arto Hellas",
+  "number": "test"
+}
+
+### short name, should fail
+
+POST http://localhost:3001/api/persons
+content-type: application/json
+
+{
+  "name": "a",
   "number": "test"
 }
 
