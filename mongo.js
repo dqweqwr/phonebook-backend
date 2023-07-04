@@ -11,7 +11,7 @@ if (argc < 3) {
   process.exit(1)
 }
 
-const url = 
+const url =
   `mongodb+srv://pnpmtrud:${password}@cluster0.f8nm1u5.mongodb.net/phonebookApp?retryWrites=true&w=majority`
 
 mongoose.set("strictQuery", false)
@@ -27,10 +27,10 @@ const Person = mongoose.model("Person", personSchema)
 if (argc === 5) {
   const person = new Person({
     name: name,
-    number: number, 
+    number: number,
   })
 
-  person.save().then(result => {
+  person.save().then(() => {
     console.log(`added ${person.name} number ${person.number} to phonebook`)
     mongoose.connection.close()
   })

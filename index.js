@@ -6,7 +6,7 @@ const Person = require("./model/person")
 
 const app = express()
 
-morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
+morgan.token('body', function (req) { return JSON.stringify(req.body) })
 const logger = morgan(':method :url :status :res[content-length] - :response-time ms :body')
 
 app.use(logger)
@@ -19,7 +19,7 @@ app.get("/info", (request, response) => {
   Person.find({})
     .then(people => people.length)
     .then(numPeople => {
-      const date = new Date().toString() 
+      const date = new Date().toString()
       const body = `
         <div>
           <p>Phonebook has info for ${numPeople} people</p>
@@ -116,7 +116,7 @@ app.put("/api/persons/:id", (request, response, next) => {
 // delete
 app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(err => next(err))
