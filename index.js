@@ -42,13 +42,14 @@ const nameUnique = (name) => {
       return persons.map(person => {
         return person.name
       })
-    }).then(names => {
+    })
+    .then(names => {
       return !names.includes(name)
     })
 }
 
 // create
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body
 
   if (!body.name || !body.number) {
@@ -62,9 +63,17 @@ app.post("/api/persons", (request, response) => {
     number: body.number,
   })
 
-  person.save().then(savedPerson => {
-    response.json(savedPerson)
-  })
+  nameUnique(person.name)
+    .then(unique => {
+      if (unique === true) {
+        person.save()
+          .then(savedPerson => {
+            response.json(savedPerson)
+          })
+      } else {
+        response.status(409).json({ error: "person already exists" })
+      }
+    })
 })
 
 // read

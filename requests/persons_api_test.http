@@ -44,6 +44,6 @@ content-type: application/json
 
 {
   "name": "Arto Hellas",
-  "number": "555-555-5555"
+  "number": "test"
 }
 
