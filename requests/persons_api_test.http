@@ -2,9 +2,23 @@
 
 GET http://localhost:3001/api/persons
 
-### delete person with id 2
+###
 
-DELETE http://localhost:3001/api/persons/2
+GET http://localhost:3001/api/persons/64a35d51dab9da6eb2d9f73c
+
+###
+
+PUT http://localhost:3001/api/persons/64a35d51dab9da6eb2d9f73c
+content-type: application/json
+
+{
+  "name": "Arto Hellas",
+  "number": "7777777777777777777"
+}
+
+### delete person with id
+
+DELETE http://localhost:3001/api/persons/64a3741ce8a7ed4ef2732532
 
 ### normal POST request, should succeed
 
@@ -32,3 +46,4 @@ content-type: application/json
   "name": "Arto Hellas",
   "number": "555-555-5555"
 }
+

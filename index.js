@@ -14,83 +14,40 @@ app.use(cors())
 app.use(express.json())
 app.use(express.static("build"))
 
-let persons = [
-  { 
-    "id": 1,
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": 2,
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": 3,
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": 4,
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122"
-  }
-]
-
-// landing page
-app.get("/", (request, response) => {
-  response.send(
-    "<h1>Hello world</h1>"
-  )
-})
-
-// get info (how many people in the database at time of visit)
+// info (how many people in the database at time of visit)
 app.get("/info", (request, response) => {
-  const date = new Date().toString() 
-  const body = `
-    <div>
-      <p>Phonebook has info for ${persons.length} people</p>
-      <p>${date}</p>
-    </div>    
-  `
-  response.send(body)
-})
-
-// get all people
-app.get("/api/persons", (request, response) => {
-  Person.find({}).then(people => {
-    response.json(people)
-  })
-})
-
-// get a specific person based on a given id
-app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(p => p.id === id)
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
-})
-
-// delete a specific person based on given id
-app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(p => p.id !== id)
-
-  response.status(204).end()
+  Person.find({})
+    .then(people => people.length)
+    .then(numPeople => {
+      const date = new Date().toString() 
+      const body = `
+        <div>
+          <p>Phonebook has info for ${numPeople} people</p>
+          <p>${date}</p>
+        </div>    
+      `
+      console.log(nameUnique("asd"))
+      response.send(body)
+    })
 })
 
 const nameUnique = (name) => {
-  const names = persons.map(person => {
-    return person.name
-  })
-  const unique = !names.includes(name)
-  return unique
+  // const names = persons.map(person => {
+  //   return person.name
+  // })
+  // const unique = !names.includes(name)
+  // return unique
+  return Person.find({})
+    .then(persons => {
+      return persons.map(person => {
+        return person.name
+      })
+    }).then(names => {
+      return !names.includes(name)
+    })
 }
 
-// create a new person
+// create
 app.post("/api/persons", (request, response) => {
   const body = request.body
 
@@ -110,10 +67,61 @@ app.post("/api/persons", (request, response) => {
   })
 })
 
+// read
+app.get("/api/persons", (request, response) => {
+  Person.find({})
+    .then(people => {
+      response.json(people)
+    })
+})
+
+app.get("/api/persons/:id", (request, response, next) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      response.json(person)
+    })
+    .catch(err => next(err))
+})
+
+// update
+app.put("/api/persons/:id", (request, response, next) => {
+  const body = request.body
+
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    }).catch(err => next(err))
+})
+
+// delete
+app.delete("/api/persons/:id", (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(err => next(err))
+})
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" })
 }
 app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message)
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" })
+  }
+
+  next(error)
+}
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
